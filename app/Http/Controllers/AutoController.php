@@ -36,16 +36,20 @@ class AutoController extends Controller
      */
     public function store(Request $request)
     {
-        if (empty($request['nome']) || empty($request['marca']) || empty($request['anno'])){
-            return back()->withInput();
-        }
+
+        $request->validate([
+            'nome' => 'required|max:20|min:4',
+            'marca' => 'required|max:20',
+            'anno' => 'required|numeric'
+        ]);
         $auto = new Auto();
-        $auto->nome = $request['nome'];
-        $auto->marca = $request['marca'];
-        $auto->anno = $request['anno'];
+        $auto->fill($request->all());
         $auto->description = $request['descrizione'];
 
-        $auto->save();
+        $saved = $auto->save();
+        if ($saved){
+            return redirect()->route('autos.index');
+        }
     }
 
     /**
