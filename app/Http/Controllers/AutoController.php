@@ -25,7 +25,7 @@ class AutoController extends Controller
      */
     public function create()
     {
-        return view('form');
+        return view('create');
     }
 
     /**
@@ -36,16 +36,14 @@ class AutoController extends Controller
      */
     public function store(Request $request)
     {
-
         $request->validate([
             'nome' => 'required|max:20|min:4',
             'marca' => 'required|max:20',
-            'anno' => 'required|numeric'
+            'anno' => 'required|numeric',
+            'description' => 'required'
         ]);
         $auto = new Auto();
         $auto->fill($request->all());
-        $auto->description = $request['descrizione'];
-
         $saved = $auto->save();
         if ($saved){
             return redirect()->route('autos.index');
@@ -58,9 +56,9 @@ class AutoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Auto $auto)
     {
-        //
+        return view('show', compact('auto'));
     }
 
     /**
@@ -69,9 +67,9 @@ class AutoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Auto $auto)
     {
-        //
+        return view('create', compact('auto'));
     }
 
     /**
@@ -81,9 +79,20 @@ class AutoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Auto $auto)
     {
-        //
+        $data = $request->all();
+        $request->validate([
+            'nome' => 'required|max:20|min:4',
+            'marca' => 'required|max:20',
+            'anno' => 'required|numeric',
+            'description' => 'required'
+        ]);
+        $saved = $auto->update($data);
+        if ($saved){
+        return view('show', compact('auto'));
+        }
+        
     }
 
     /**
@@ -92,8 +101,9 @@ class AutoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Auto $auto)
     {
-        //
+        $auto->delete();
+        return redirect()->route('autos.index');
     }
 }
